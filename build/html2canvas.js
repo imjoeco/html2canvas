@@ -1031,8 +1031,6 @@ function h2cRenderContext(width, height) {
 }
 _html2canvas.Parse = function (images, options) {
   window.scroll(0,0);
-  console.log("parsing")
-  console.dir(options)
 
   var element = (( options.elements === undefined ) ? document.body : options.elements[0]), // select body by default
   numDraws = 0,
@@ -1106,20 +1104,12 @@ _html2canvas.Parse = function (images, options) {
 
   function drawText(currentText, x, y, ctx, transform){
     if (currentText !== null && Util.trimText(currentText).length > 0) {
-      console.log(currentText, x, y);
       ctx.fillText(currentText, x, y);
-      console.log('drawing')
-      if(transform)
-      console.dir(transform)
-      console.dir(ctx)
       numDraws+=1;
     }
   }
 
   function setTextVariables(ctx, el, text_decoration, color) {
-    console.log('ctx')
-    console.dir(ctx)
-    console.dir(text_decoration)
     var align = false,
     bold = getCSS(el, "fontWeight"),
     family = getCSS(el, "fontFamily"),
@@ -1207,12 +1197,6 @@ _html2canvas.Parse = function (images, options) {
 
   function renderText(el, textNode, stack) {
     var localStack = JSON.parse(JSON.stringify(stack))
-    if(stack.transform.matrix){
-      console.log('start render')
-      console.dir(stack)
-      console.dir(localStack)
-      console.log('fuck')
-    }
     var ctx = stack.ctx,
     color = getCSS(el, "color"),
     textDecoration = getCSS(el, "textDecoration"),
@@ -1231,7 +1215,6 @@ _html2canvas.Parse = function (images, options) {
       textList = (!options.letterRendering || (/^(left|right|justify|auto)$/.test(textAlign) && noLetterSpacing(getCSS(el, "letterSpacing")))) ?
       textNode.nodeValue.split(/(\b| )/)
       : textNode.nodeValue.split("");
-      console.log("textList: "+textList)
 
       metrics = setTextVariables(ctx, el, textDecoration, color);
 
@@ -1246,14 +1229,8 @@ _html2canvas.Parse = function (images, options) {
       }
 
       textList.forEach(function(text, index) {
-        console.log(text)
-        console.dir(stack)
-        console.log('localstack')
-        console.dir(localStack)
         var bounds = getTextBounds(state, text, textDecoration, (index < textList.length - 1), stack.transform.matrix);
         if (bounds) {
-          console.log("bounded")
-          console.dir(stack)
           drawText(text, bounds.left, bounds.bottom, ctx, stack.transform);
           renderTextDecoration(ctx, textDecoration, bounds, metrics, color);
         }
@@ -2047,10 +2024,6 @@ _html2canvas.Parse = function (images, options) {
       transform: transform,
       clip: (parentStack && parentStack.clip) ? Util.Extend( {}, parentStack.clip ) : null
     };
-    if(transform.matrix){
-        console.dir(element)
-        console.dir(transform)
-    }
 
     setZ(element, stack, parentStack);
 
@@ -2085,11 +2058,8 @@ _html2canvas.Parse = function (images, options) {
   }
 
   function renderElement(element, parentStack, pseudoElement, ignoreBackground) {
-    console.dir(parentStack)
-    var transform = getTransform(element, parentStack)
-      console.log('transform')
-      console.dir(transform)
-      var bounds = getBounds(element, transform),
+    var transform = getTransform(element, parentStack),
+    bounds = getBounds(element, transform),
     image,
     stack = createStack(element, parentStack, bounds, transform),
     borders = stack.borders,
@@ -2162,10 +2132,7 @@ _html2canvas.Parse = function (images, options) {
 
   function parseElement (element, stack, pseudoElement) {
     if (isElementVisible(element)) {
-      //WTF?!?!?!?!?!
       stack = renderElement(element, stack, pseudoElement, false) || stack;
-      console.log('stack now: ')
-        console.dir(stack)
       if (!ignoreElementsRegExp.test(element.nodeName)) {
         parseChildren(element, stack, pseudoElement);
       }
